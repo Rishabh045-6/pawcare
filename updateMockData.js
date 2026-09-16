@@ -1,4 +1,10 @@
-export const providers = [
+const fs = require('fs');
+const path = require('path');
+
+const mockDataPath = path.join(__dirname, 'src', 'data', 'mockData.ts');
+let content = fs.readFileSync(mockDataPath, 'utf8');
+
+const newProviders = `export const providers = [
   {
     id: 'happy-paws-veterinary-hospital',
     name: 'Happy Paws Veterinary Hospital',
@@ -186,98 +192,8 @@ export const providers = [
     hasAmbulance: true,
     contact: '+91 5566778899'
   }
-];
+];`;
 
-export const aiMockData = {
-  interpretedSearch: {
-    species: 'Dog',
-    animal_type: 'Pet',
-    concern: 'General health concern',
-    duration: 'Unspecified',
-    reportedSymptoms: [],
-    urgencyIndicators: [],
-    suggestedService: 'veterinary'
-  },
-  medicalReportSummary: {
-    pet: { name: 'Bruno', species: 'Dog', breed: 'Golden Retriever', age: '4 years' },
-    documentType: 'Blood Test Report',
-    reportedFacts: [
-      'Complete Blood Count (CBC) and Chemistry Panel performed.',
-      'WBC count recorded at 18.5 x10^9/L (Reference: 6.0 - 17.0 x10^9/L).',
-      'RBC, Platelets, and BUN within normal limits.',
-      'Amoxicillin 250mg prescribed twice daily for 7 days.'
-    ],
-    labResults: [
-      { test: 'WBC Count', value: '18.5', unit: 'x10^9/L', referenceRange: '6.0 - 17.0 x10^9/L', status: 'above_range' },
-      { test: 'RBC Count', value: '6.2', unit: 'x10^12/L', referenceRange: '5.5 - 8.5 x10^12/L', status: 'within_range' },
-      { test: 'Platelets', value: '250', unit: 'x10^9/L', referenceRange: '200 - 500 x10^9/L', status: 'within_range' },
-      { test: 'BUN', value: '15', unit: 'mg/dL', referenceRange: '7 - 27 mg/dL', status: 'within_range' }
-    ],
-    medications: [
-      { name: 'Amoxicillin', dose: '250mg', frequency: 'Twice daily', duration: '7 days' }
-    ],
-    symptoms: [],
-    followUpItems: ['Recommend follow-up in 1 week', 'Consider probiotics'],
-    aiExplanation: [
-      'WBC (White Blood Cells) are part of the immune system. An elevated WBC count can sometimes indicate inflammation, stress, or an infection.',
-      'Amoxicillin is a common antibiotic used to treat bacterial infections.',
-      'Probiotics are sometimes recommended alongside antibiotics to help maintain healthy gut bacteria.'
-    ],
-    questionsForVet: [
-      'What are the most common causes for an elevated WBC count in this context?',
-      'Are there any further diagnostics or follow-up tests recommended?',
-      'Should we monitor for any specific clinical signs at home?'
-    ]
-  },
-  passportTimeline: {
-    petProfile: {
-      name: 'Bruno',
-      species: 'Dog',
-      breed: 'Golden Retriever',
-      age: '4 years',
-      sex: 'Male (Neutered)'
-    },
-    events: [
-      {
-        id: 'doc-1',
-        date: 'Jan 12, 2026',
-        title: 'Blood Test',
-        type: 'Laboratory Report',
-        extracted: {
-          facts: [
-            'CBC (Complete Blood Count) performed.',
-            'WBC count recorded at 18.5 x10^9/L (Reference: 6.0 - 17.0).',
-            'RBC, Platelets, and BUN within normal limits.'
-          ]
-        }
-      },
-      {
-        id: 'doc-2',
-        date: 'Feb 03, 2026',
-        title: 'Prescription',
-        type: 'Medication',
-        extracted: {
-          facts: [
-            'Amoxicillin (250mg) prescribed.',
-            'Dosage: Twice daily.',
-            'Duration: 7 days.',
-            'Probiotics recommended.'
-          ]
-        }
-      },
-      {
-        id: 'doc-3',
-        date: 'Mar 21, 2026',
-        title: 'Follow-up Report',
-        type: 'Clinical Notes',
-        extracted: {
-          facts: [
-            'Follow-up observations: Symptoms resolved, appetite returned.',
-            'Recommended follow-up: Continue standard tick/flea prevention.',
-            'No further diagnostic tests requested.'
-          ]
-        }
-      }
-    ]
-  }
-};
+content = content.replace(/export const providers = \[[\s\S]*?\];/, newProviders);
+
+fs.writeFileSync(mockDataPath, content, 'utf8');

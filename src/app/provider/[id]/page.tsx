@@ -1,5 +1,4 @@
 import { providers } from '@/data/mockData';
-// removed notFound
 import { MapPin, Phone, Clock, Star, AlertCircle, Truck, Navigation, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -33,7 +32,7 @@ export default async function ProviderPage({ params }: { params: Promise<{ id: s
       
       <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={provider.image} alt={provider.name} className="w-full h-64 object-cover bg-slate-100" onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=500&h=500&fit=crop'; e.currentTarget.onerror = null; }} />
+        <img src={provider.image || 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=500&h=500&fit=crop'} alt={provider.name} className="w-full h-64 object-cover bg-slate-100" />
         
         <div className="p-6 md:p-8 space-y-6">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
@@ -45,6 +44,7 @@ export default async function ProviderPage({ params }: { params: Promise<{ id: s
                 ) : (
                   <Badge variant="secondary">Closed</Badge>
                 )}
+                <Badge variant="outline" className="text-slate-500 border-slate-200 bg-slate-50">Demo Provider</Badge>
               </div>
               <h1 className="text-3xl font-bold text-gray-900">{provider.name}</h1>
               <div className="flex items-center gap-4 text-sm font-medium">
