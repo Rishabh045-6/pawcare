@@ -1,0 +1,55 @@
+import { NextResponse } from 'next/server';
+import Groq from 'groq-sdk';
+
+const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
+const model = process.env.GROQ_MODEL || 'openai/gpt-oss-20b';
+
+export async function POST(req: Request) {
+  if (!groq) {
+    console.log("Groq unavailable — using mock AI fallback.");
+    return NextResponse.json({ error: 'Groq API Key not found' }, { status: 503 });
+  }
+
+  try {
+    const { query } = await req.json();
+
+    if (!query) {
+      return NextResponse.json({ error: 'Query is required' }, { status: 400 });
+    }
+
+    const response = await groq.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content: `You are an AI Care Router for animal healthcare. Your job is to extract structured information from user queries to help route them to the correct care.
+          Do NOT diagnose, treat, or suggest medical conclusions. Only extract what the user reports.
+          Output strictly in JSON format with the following keys:
+          - species (e.g., 'Dog', 'Cat', 'Bird', 'Unspecified')
+          - animal_type (e.g., 'Pet', 'Stray', 'Wildlife')
+          - concern (e.g., 'Digestive concern', 'Physical trauma')
+          - duration (e.g., 'Recently reported', 'Immediate', 'Upcoming')
+          - reportedSymptoms (Array of strings)
+          - urgencyIndicators (Array of strings, or empty array)
+          - suggestedService (Must be one of: 'veterinary', 'boarding', 'ambulance', 'ngo')
+          - emergencyFlag (boolean)`
+        },
+        {
+          role: 'user',
+          content: query
+        }
+      ],
+      model: model,
+      temperature: 0,
+      response_format: { type: 'json_object' }
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content) throw new Error('Empty response from Groq');
+
+    const json = JSON.parse(content);
+    return NextResponse.json(json);
+  } catch (error) {
+    console.log("Groq unavailable — using mock AI fallback.", error);
+    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
+  }
+}
